@@ -53,25 +53,49 @@ After launch, verify all of the following:
 
 The helper performs the first three checks when the server provides `ss`.
 
-## Report access instructions
+## Configure the user's local SSH client
 
-Always report:
+Treat this as a required half of the workflow, not an optional note. Clearly distinguish commands
+run on the remote server from configuration written on the user's own computer. Never edit the
+remote server's `~/.ssh/config` and claim that local forwarding is configured.
 
-- service name and selected remote port;
-- remote session and log path;
-- the exact `LocalForward` line;
-- the URL to open on the user's computer;
-- that the URL works only while the SSH connection or persistent tunnel is active.
+Provide a complete local OpenSSH example:
 
-For a fixed range, generate rules instead of writing them manually:
+```sshconfig
+Host project-server
+    HostName SERVER_IP_OR_DNS
+    User SERVER_USER
+    IdentityFile ~/.ssh/PRIVATE_KEY
+
+    LocalForward 127.0.0.1:18000 127.0.0.1:18000
+    # Include every generated LocalForward line in the reserved range.
+
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+    TCPKeepAlive yes
+    ExitOnForwardFailure yes
+```
+
+Tell the user to merge the generated `LocalForward` lines into an existing matching `Host` block
+instead of duplicating known connection settings. On Linux and macOS, the default file is
+`~/.ssh/config`; with Windows OpenSSH, it is `%USERPROFILE%\.ssh\config`.
+
+Generate the full fixed range instead of asking the user to type it:
 
 ```bash
 scripts/web-session forward-config 18000 18099
 ```
 
-OpenSSH has no native port-range syntax; the helper expands the range into individual
-`LocalForward` rules. Once those rules are under a host alias in the user's local
-`~/.ssh/config`, an ordinary `ssh <alias>` activates the whole range.
+OpenSSH has no native port-range syntax; the helper expands the range into individual rules. Once
+the local configuration is saved, `ssh project-server` activates both the terminal and all
+forwards. Use `ssh -N project-server` when only the tunnel is needed.
+
+If the user has not installed the fixed range yet, also provide an immediately usable one-port
+command:
+
+```bash
+ssh -L 127.0.0.1:18037:127.0.0.1:18037 SERVER_USER@SERVER_IP_OR_DNS
+```
 
 When the user connects to multiple remote servers simultaneously, assign a distinct local range
 to each server. For example:
@@ -80,6 +104,21 @@ to each server. For example:
 # Remote 18000-18099 becomes local 18100-18199.
 scripts/web-session forward-config 18000 18099 18100
 ```
+
+In that example, remote port `18037` is local port `18137`. Report the translated local URL
+accurately.
+
+## Report access instructions
+
+Always report:
+
+- service name and selected remote port;
+- remote session and log path;
+- whether the user's local SSH configuration is already known to contain the mapping;
+- the exact `LocalForward` line and, when needed, the complete local `Host` example;
+- a one-port `ssh -L` command when permanent local configuration is not confirmed;
+- the URL to open on the user's computer;
+- that the URL works only while the SSH connection or persistent tunnel is active.
 
 ## Manage services
 

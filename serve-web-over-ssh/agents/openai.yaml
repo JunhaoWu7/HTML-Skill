@@ -1,4 +1,4 @@
 interface:
   display_name: "Serve Web over SSH"
   short_description: "Persist and access remote web pages through SSH"
-  default_prompt: "Use $serve-web-over-ssh to serve this page persistently and give me the secure SSH access URL."
+  default_prompt: "Use $serve-web-over-ssh to serve this page persistently and provide the required local SSH config and access URL."
