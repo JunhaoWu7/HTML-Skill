@@ -1,0 +1,397 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROGRAM=${0##*/}
+PORT_MIN=${WEB_SSH_PORT_MIN:-18000}
+PORT_MAX=${WEB_SSH_PORT_MAX:-18099}
+START_TIMEOUT=${WEB_SSH_START_TIMEOUT:-20}
+STATE_HOME=${XDG_STATE_HOME:-"${HOME:?HOME is not set}/.local/state"}
+STATE_DIR="${STATE_HOME}/serve-web-over-ssh"
+SESSION_PREFIX="web-ssh-"
+
+usage() {
+    cat <<EOF
+Usage:
+  ${PROGRAM} start-static NAME DIRECTORY [PORT|auto]
+  ${PROGRAM} start NAME PORT|auto WORKING_DIRECTORY -- COMMAND [ARG...]
+  ${PROGRAM} list
+  ${PROGRAM} status NAME
+  ${PROGRAM} logs NAME [LINE_COUNT]
+  ${PROGRAM} stop NAME
+  ${PROGRAM} forward-config [REMOTE_FIRST REMOTE_LAST [LOCAL_FIRST]]
+
+Environment:
+  WEB_SSH_PORT_MIN        Automatic range start (default: 18000)
+  WEB_SSH_PORT_MAX        Automatic range end (default: 18099)
+  WEB_SSH_START_TIMEOUT   Startup wait in seconds (default: 20)
+
+Use the exact argument __PORT__ in an application command to insert the selected port.
+EOF
+}
+
+die() {
+    printf 'ERROR: %s\n' "$*" >&2
+    exit 1
+}
+
+require_command() {
+    command -v "$1" >/dev/null 2>&1 || die "Required command not found: $1"
+}
+
+validate_name() {
+    [[ ${1:-} =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]{0,62}$ ]] ||
+        die "NAME must use 1-63 letters, digits, dots, underscores, or hyphens."
+}
+
+validate_port() {
+    [[ ${1:-} =~ ^[0-9]+$ ]] || die "Invalid port: ${1:-<empty>}"
+    (( 1 <= 10#$1 && 10#$1 <= 65535 )) || die "Port is outside 1-65535: $1"
+}
+
+validate_nonnegative_integer() {
+    [[ ${1:-} =~ ^[0-9]+$ ]] || die "Expected a nonnegative integer, got: ${1:-<empty>}"
+}
+
+session_name() {
+    printf '%s%s' "$SESSION_PREFIX" "$1"
+}
+
+port_file() {
+    printf '%s/%s.port' "$STATE_DIR" "$1"
+}
+
+log_file() {
+    printf '%s/%s.log' "$STATE_DIR" "$1"
+}
+
+session_exists() {
+    tmux has-session -t "=$(session_name "$1")" 2>/dev/null
+}
+
+port_is_free() {
+    python3 - "$1" <<'PY'
+import socket
+import sys
+
+port = int(sys.argv[1])
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        sock.bind(("127.0.0.1", port))
+    except OSError:
+        raise SystemExit(1)
+PY
+}
+
+select_port() {
+    local requested=$1 port
+    if [[ $requested != auto ]]; then
+        validate_port "$requested"
+        port_is_free "$requested" || die "Remote port $requested is already in use."
+        printf '%s' "$requested"
+        return
+    fi
+
+    validate_port "$PORT_MIN"
+    validate_port "$PORT_MAX"
+    (( 10#$PORT_MIN <= 10#$PORT_MAX )) ||
+        die "WEB_SSH_PORT_MIN must not exceed WEB_SSH_PORT_MAX."
+
+    for ((port = 10#$PORT_MIN; port <= 10#$PORT_MAX; port++)); do
+        if port_is_free "$port"; then
+            printf '%s' "$port"
+            return
+        fi
+    done
+    die "No free loopback port in ${PORT_MIN}-${PORT_MAX}."
+}
+
+port_accepts_connections() {
+    python3 - "$1" <<'PY'
+import socket
+import sys
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+    sock.settimeout(0.25)
+    try:
+        sock.connect(("127.0.0.1", int(sys.argv[1])))
+    except OSError:
+        raise SystemExit(1)
+PY
+}
+
+wait_for_service() {
+    local name=$1 port=$2 elapsed=0
+    while (( elapsed < START_TIMEOUT * 4 )); do
+        session_exists "$name" || return 1
+        if port_accepts_connections "$port"; then
+            return 0
+        fi
+        sleep 0.25
+        ((elapsed += 1))
+    done
+    return 1
+}
+
+verify_loopback_listener() {
+    local port=$1 address found=0
+    if ! command -v ss >/dev/null 2>&1; then
+        printf 'WARNING: ss is unavailable; loopback-only binding could not be independently verified.\n' >&2
+        return 0
+    fi
+
+    while IFS= read -r address; do
+        [[ -n $address ]] || continue
+        found=1
+        case "$address" in
+            127.0.0.1:"$port"|\[::1\]:"$port")
+                ;;
+            *)
+                printf 'ERROR: Unsafe listener for port %s found at %s\n' "$port" "$address" >&2
+                return 1
+                ;;
+        esac
+    done < <(ss -H -ltn | awk -v suffix=":${port}" '$4 ~ suffix "$" {print $4}')
+
+    (( found == 1 )) || {
+        printf 'ERROR: No listener found for port %s.\n' "$port" >&2
+        return 1
+    }
+}
+
+quote_command() {
+    local output= argument quoted
+    for argument in "$@"; do
+        printf -v quoted '%q' "$argument"
+        output+="${quoted} "
+    done
+    printf '%s' "$output"
+}
+
+start_service() {
+    local name=$1 requested_port=$2 working_directory=$3
+    shift 3
+
+    validate_name "$name"
+    [[ -d $working_directory ]] || die "Working directory does not exist: $working_directory"
+    (( $# > 0 )) || die "No service command supplied."
+    require_command tmux
+    require_command python3
+    mkdir -p "$STATE_DIR"
+
+    if session_exists "$name"; then
+        die "Service '$name' already has a running tmux session."
+    fi
+
+    local port session log command_string cwd_quoted log_quoted argument
+    local -a command_args=()
+    port=$(select_port "$requested_port")
+    session=$(session_name "$name")
+    log=$(log_file "$name")
+
+    for argument in "$@"; do
+        command_args+=("${argument//__PORT__/$port}")
+    done
+
+    command_string=$(quote_command "${command_args[@]}")
+    printf -v cwd_quoted '%q' "$working_directory"
+    printf -v log_quoted '%q' "$log"
+    : >"$log"
+
+    tmux new-session -d -s "$session" \
+        "cd ${cwd_quoted} && exec ${command_string} >>${log_quoted} 2>&1"
+
+    if ! wait_for_service "$name" "$port"; then
+        tmux kill-session -t "=$session" 2>/dev/null || true
+        printf 'ERROR: Service did not listen on 127.0.0.1:%s within %s seconds.\n' \
+            "$port" "$START_TIMEOUT" >&2
+        printf 'Log: %s\n' "$log" >&2
+        tail -n 30 "$log" >&2 || true
+        exit 1
+    fi
+
+    if ! verify_loopback_listener "$port"; then
+        tmux kill-session -t "=$session" 2>/dev/null || true
+        die "Stopped service '$name' because it was not loopback-only."
+    fi
+
+    printf '%s\n' "$port" >"$(port_file "$name")"
+    printf 'SERVICE_NAME=%s\n' "$name"
+    printf 'REMOTE_PORT=%s\n' "$port"
+    printf 'TMUX_SESSION=%s\n' "$session"
+    printf 'LOG=%s\n' "$log"
+    printf 'REMOTE_URL=http://127.0.0.1:%s/\n' "$port"
+    printf 'LOCAL_URL=http://127.0.0.1:%s/\n' "$port"
+    printf 'SSH_CONFIG=LocalForward 127.0.0.1:%s 127.0.0.1:%s\n' "$port" "$port"
+}
+
+start_static() {
+    (( $# == 2 || $# == 3 )) || {
+        usage >&2
+        exit 2
+    }
+    local name=$1 directory=$2 requested_port=${3:-auto}
+    directory=$(cd "$directory" 2>/dev/null && pwd -P) ||
+        die "Directory does not exist: $directory"
+    start_service "$name" "$requested_port" "$directory" \
+        python3 -u -m http.server __PORT__ --bind 127.0.0.1 --directory "$directory"
+}
+
+read_service_port() {
+    local file
+    file=$(port_file "$1")
+    [[ -f $file ]] || die "No managed state found for service '$1'."
+    local port
+    IFS= read -r port <"$file"
+    validate_port "$port"
+    printf '%s' "$port"
+}
+
+list_services() {
+    require_command tmux
+    mkdir -p "$STATE_DIR"
+    local file name port state
+    local found=0
+    printf '%-24s %-8s %-10s %s\n' NAME PORT STATE LOG
+    shopt -s nullglob
+    for file in "$STATE_DIR"/*.port; do
+        found=1
+        name=${file##*/}
+        name=${name%.port}
+        IFS= read -r port <"$file"
+        if session_exists "$name"; then
+            state=running
+        else
+            state=stopped
+        fi
+        printf '%-24s %-8s %-10s %s\n' "$name" "$port" "$state" "$(log_file "$name")"
+    done
+    shopt -u nullglob
+    (( found == 1 )) || printf '(no managed services)\n'
+}
+
+show_status() {
+    (( $# == 1 )) || {
+        usage >&2
+        exit 2
+    }
+    validate_name "$1"
+    require_command tmux
+    local port state
+    port=$(read_service_port "$1")
+    if session_exists "$1"; then
+        state=running
+    else
+        state=stopped
+    fi
+    printf 'SERVICE_NAME=%s\nREMOTE_PORT=%s\nSTATE=%s\nTMUX_SESSION=%s\nLOG=%s\n' \
+        "$1" "$port" "$state" "$(session_name "$1")" "$(log_file "$1")"
+}
+
+show_logs() {
+    (( $# == 1 || $# == 2 )) || {
+        usage >&2
+        exit 2
+    }
+    validate_name "$1"
+    local lines=${2:-100}
+    validate_nonnegative_integer "$lines"
+    local log
+    log=$(log_file "$1")
+    [[ -f $log ]] || die "No log found for service '$1'."
+    tail -n "$lines" "$log"
+}
+
+stop_service() {
+    (( $# == 1 )) || {
+        usage >&2
+        exit 2
+    }
+    validate_name "$1"
+    require_command tmux
+    local session
+    session=$(session_name "$1")
+    if session_exists "$1"; then
+        tmux kill-session -t "=$session"
+        printf 'Stopped tmux session: %s\n' "$session"
+    else
+        printf 'Service was not running: %s\n' "$1"
+    fi
+    rm -f -- "$(port_file "$1")"
+    printf 'Retained log: %s\n' "$(log_file "$1")"
+}
+
+forward_config() {
+    (( $# == 0 || $# == 2 || $# == 3 )) || {
+        usage >&2
+        exit 2
+    }
+    local remote_first=${1:-$PORT_MIN}
+    local remote_last=${2:-$PORT_MAX}
+    local local_first=${3:-$remote_first}
+    validate_port "$remote_first"
+    validate_port "$remote_last"
+    validate_port "$local_first"
+    (( 10#$remote_first <= 10#$remote_last )) ||
+        die "REMOTE_FIRST must not exceed REMOTE_LAST."
+    local count=$((10#$remote_last - 10#$remote_first))
+    local local_last=$((10#$local_first + count))
+    (( local_last <= 65535 )) || die "Generated local range exceeds port 65535."
+
+    local remote_port local_port
+    for ((remote_port = 10#$remote_first; remote_port <= 10#$remote_last; remote_port++)); do
+        local_port=$((10#$local_first + remote_port - 10#$remote_first))
+        printf '    LocalForward 127.0.0.1:%s 127.0.0.1:%s\n' \
+            "$local_port" "$remote_port"
+    done
+}
+
+main() {
+    (( $# > 0 )) || {
+        usage >&2
+        exit 2
+    }
+    local command=$1
+    shift
+    case "$command" in
+        start-static)
+            start_static "$@"
+            ;;
+        start)
+            (( $# >= 5 )) || {
+                usage >&2
+                exit 2
+            }
+            local name=$1 port=$2 working_directory=$3
+            shift 3
+            [[ ${1:-} == -- ]] || die "Expected -- before the service command."
+            shift
+            start_service "$name" "$port" "$working_directory" "$@"
+            ;;
+        list)
+            (( $# == 0 )) || die "list takes no arguments."
+            list_services
+            ;;
+        status)
+            show_status "$@"
+            ;;
+        logs)
+            show_logs "$@"
+            ;;
+        stop)
+            stop_service "$@"
+            ;;
+        forward-config)
+            forward_config "$@"
+            ;;
+        -h|--help|help)
+            usage
+            ;;
+        *)
+            usage >&2
+            die "Unknown command: $command"
+            ;;
+    esac
+}
+
+main "$@"
