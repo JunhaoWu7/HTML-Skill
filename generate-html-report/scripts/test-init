@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+tmp=$(mktemp -d)
+trap 'rm -rf -- "${tmp}"' EXIT
+
+first_output=$("${SCRIPT_DIR}/init-report-center" "${tmp}")
+grep -q '^CREATED_COUNT=10$' <<<"${first_output}"
+grep -q '^PRESERVED_COUNT=0$' <<<"${first_output}"
+
+make -C "${tmp}" test
+make -C "${tmp}" build
+test -s "${tmp}/public/index.html"
+test -s "${tmp}/public/reports/example.html"
+grep -q 'HTML 汇报工作流已就绪' "${tmp}/public/reports/example.html"
+
+second_output=$("${SCRIPT_DIR}/init-report-center" "${tmp}")
+grep -q '^CREATED_COUNT=0$' <<<"${second_output}"
+grep -q '^PRESERVED_COUNT=10$' <<<"${second_output}"
+
+echo "generate-html-report initializer test passed"

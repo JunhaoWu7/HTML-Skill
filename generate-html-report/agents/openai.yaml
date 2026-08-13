@@ -1,0 +1,4 @@
+interface:
+  display_name: "Generate HTML Report"
+  short_description: "Turn source material into polished HTML reports"
+  default_prompt: "Use $generate-html-report to turn these materials into a polished HTML report and provide a safe preview URL."

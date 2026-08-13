@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "site": {
+    "title": "我的汇报中心",
+    "brand": "WORKLOG",
+    "hero_kicker": "PERSONAL REPORT LIBRARY",
+    "hero_title": "把进展，变成",
+    "hero_emphasis": "清晰的结果。",
+    "hero_description": "集中查看项目汇报、反馈洞察和阶段复盘。每份报告都适合电脑、手机以及打印阅读。"
+  },
+  "report_defaults": {
+    "language": "zh-CN",
+    "audience": "自己查看；用户另有说明时以用户说明为准",
+    "tone": "简洁、直接、结论优先",
+    "status": "已完成",
+    "category": "工作汇报",
+    "accent": "#6657d9",
+    "structure": [
+      "一页结论",
+      "关键数据或事实",
+      "进展与反馈",
+      "风险或待决策事项",
+      "下一步"
+    ],
+    "visuals": "根据材料自动选择指标卡、进度条、反馈卡、表格和图片，不为了装饰虚构数据"
+  },
+  "agent": {
+    "trigger_phrases": [
+      "HTML展示",
+      "HTML汇报",
+      "做个页面",
+      "结果展示",
+      "可视化汇报",
+      "生成报告"
+    ],
+    "default_workflow": [
+      "理解用途、受众和用户明确提供或指定的材料",
+      "材料足够时直接提炼结论；只有缺失信息会实质改变结果时才询问",
+      "在 reports/ 创建日期加主题命名的 Markdown 报告",
+      "按需把 CSV 放入 reports/data/、图片放入 reports/images/",
+      "运行 make build 和 make test",
+      "检查生成的 HTML、相对资源路径和敏感信息",
+      "更新安全本地预览并回复报告地址"
+    ],
+    "privacy": "默认仅生成本地文件并通过 SSH 回环预览；未经用户明确同意，不公开部署、不上传材料",
+    "publishing": "只有用户明确要求公开分享或部署时，才选择发布方式并再次检查敏感信息"
+  },
+  "preview": {
+    "service_name": "workbuddy-reports",
+    "preferred_port": 18000,
+    "bind": "127.0.0.1"
+  }
+}

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>{{SITE_TITLE}}</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="library-page">
+  <header class="library-header">
+    <nav><a class="brand" href="index.html"><i>W</i><span>{{BRAND}}</span></a><button class="theme-toggle" type="button" aria-label="切换主题">◐</button></nav>
+    <div class="library-hero">
+      <p class="eyebrow">{{HERO_KICKER}}</p>
+      <h1>{{HERO_TITLE}}<br><em>{{HERO_EMPHASIS}}</em></h1>
+      <p>{{HERO_DESCRIPTION}}</p>
+    </div>
+  </header>
+  <main class="library-main">
+    <div class="library-toolbar">
+      <div><strong>{{REPORT_COUNT}}</strong><span>份报告</span></div>
+      <label class="search"><span>⌕</span><input id="report-search" type="search" placeholder="搜索标题或内容" autocomplete="off"></label>
+    </div>
+    <section class="report-grid" id="report-grid">{{REPORT_CARDS}}</section>
+    <p class="empty-state" id="empty-state" hidden>没有找到匹配的报告。</p>
+  </main>
+  <footer>本地生成 · 数据属于你 · <span id="year"></span></footer>
+  <script src="assets/app.js"></script>
+</body>
+</html>

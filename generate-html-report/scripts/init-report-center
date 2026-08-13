@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROGRAM=${0##*/}
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+SKILL_DIR=$(CDPATH= cd -- "${SCRIPT_DIR}/.." && pwd)
+TEMPLATE_DIR="${SKILL_DIR}/assets/report-center"
+
+usage() {
+    cat <<EOF
+Usage: ${PROGRAM} [TARGET_DIRECTORY]
+
+Initialize the portable HTML report workflow without overwriting existing files.
+TARGET_DIRECTORY defaults to the current working directory.
+EOF
+}
+
+case ${1:-} in
+    -h|--help)
+        usage
+        exit 0
+        ;;
+esac
+
+TARGET=${1:-.}
+mkdir -p "${TARGET}"
+TARGET=$(CDPATH= cd -- "${TARGET}" && pwd)
+
+if [[ ! -d ${TEMPLATE_DIR} ]]; then
+    echo "Missing bundled template: ${TEMPLATE_DIR}" >&2
+    exit 1
+fi
+
+created=0
+preserved=0
+while IFS= read -r -d '' source; do
+    relative=${source#"${TEMPLATE_DIR}/"}
+    destination="${TARGET}/${relative}"
+    if [[ -e ${destination} || -L ${destination} ]]; then
+        echo "PRESERVED=${relative}"
+        preserved=$((preserved + 1))
+        continue
+    fi
+    mkdir -p "$(dirname -- "${destination}")"
+    cp -- "${source}" "${destination}"
+    echo "CREATED=${relative}"
+    created=$((created + 1))
+done < <(find "${TEMPLATE_DIR}" -type f -print0 | sort -z)
+
+echo "TARGET=${TARGET}"
+echo "CREATED_COUNT=${created}"
+echo "PRESERVED_COUNT=${preserved}"
+echo "NEXT=Create a report in reports/, then run make build and make test."

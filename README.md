@@ -1,5 +1,20 @@
 # HTML-Skill
 
+这个仓库包含两套可以组合使用的 Skill：
+
+- `generate-html-report`：把文字、Markdown、CSV、截图、进展和反馈整理成响应式 HTML 汇报，自动构建和测试。
+- `serve-web-over-ssh`：让静态 HTML、训练面板和其他网页在远程服务器持久运行，并通过 SSH 安全访问。
+
+组合后的默认链路是：
+
+```text
+材料和需求 → generate-html-report → public/ 静态报告
+                                     ↓
+                           serve-web-over-ssh
+                                     ↓
+                           本地浏览器安全查看
+```
+
 `serve-web-over-ssh` 是一套面向远程 Linux 服务器的通用 Skill：让 Codex 将静态 HTML、
 训练面板、评测页面、TensorBoard、Gradio、Streamlit 等网页持久运行在服务器本机，并通过
 SSH 加密隧道安全地带回你的电脑。
@@ -26,6 +41,7 @@ git clone https://github.com/JunhaoWu7/HTML-Skill.git
 cd HTML-Skill
 mkdir -p ~/.codex/skills
 ln -s "$PWD/serve-web-over-ssh" ~/.codex/skills/serve-web-over-ssh
+ln -s "$PWD/generate-html-report" ~/.codex/skills/generate-html-report
 ```
 
 如果目标位置已经存在，先检查它是不是旧版本或正确的符号链接，不要直接覆盖。更新仓库：
@@ -44,7 +60,21 @@ git pull --ff-only
 
 Skill 不会自行安装系统软件或修改防火墙。
 
-## 二、在自己的电脑配置固定端口段
+## 二、让 Agent 自动生成 HTML 汇报
+
+安装两套 Skill 后，直接告诉 Agent：
+
+```text
+把这些材料做成 HTML 展示，结论放前面。
+把 feedback.csv 做成反馈分析页面。
+把本周进展和截图整理成给领导看的周报。
+```
+
+`generate-html-report` 会优先复用项目现有的报告工作流。如果项目还没有报告中心，它会用自带模板进行初始化，然后生成报告、运行构建和测试，最后调用 `serve-web-over-ssh` 返回安全预览地址。
+
+默认不会把报告公开到互联网，也不会主动上传原始材料。需要公网分享时必须明确提出，并在发布前检查敏感信息。
+
+## 三、在自己的电脑配置固定端口段
 
 **这一步必须在你自己的电脑上完成，不是在远程服务器上完成。** 远端安装 Skill 只能保持
 网页进程运行；没有本地 SSH 转发，浏览器仍然无法访问远端的 `127.0.0.1`。
@@ -131,7 +161,7 @@ autossh -M 0 -N cot-server
 http://127.0.0.1:18137
 ```
 
-## 三、持久展示静态 HTML
+## 四、持久展示静态 HTML
 
 假设网页目录是 `/path/to/report`：
 
@@ -157,7 +187,7 @@ SSH_CONFIG=LocalForward 127.0.0.1:18000 127.0.0.1:18000
 不要为了方便把整个项目根目录、Home 目录、凭证目录、原始训练数据或私有 session 目录作为
 网页目录。
 
-## 四、持久运行现有网页应用
+## 五、持久运行现有网页应用
 
 通用格式：
 
@@ -181,7 +211,7 @@ SSH_CONFIG=LocalForward 127.0.0.1:18000 127.0.0.1:18000
 如果应用依赖虚拟环境，先激活环境，再调用脚本；脚本会继承当前环境。不要把 API key 或
 令牌直接写进命令参数。
 
-## 五、查询、日志与停止
+## 六、查询、日志与停止
 
 ```bash
 # 查看全部由 Skill 管理的服务
@@ -203,7 +233,7 @@ SSH_CONFIG=LocalForward 127.0.0.1:18000 127.0.0.1:18000
 ~/.local/state/serve-web-over-ssh/
 ```
 
-## 六、常见故障
+## 七、常见故障
 
 ### 浏览器显示无法连接
 

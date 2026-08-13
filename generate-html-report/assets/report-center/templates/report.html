@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN" style="--accent:{{ACCENT}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="{{SUMMARY}}">
+  <title>{{TITLE}} · {{SITE_TITLE}}</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body class="report-page">
+  <header class="report-nav">
+    <a class="brand" href="../index.html"><i>W</i><span>{{BRAND}}</span></a>
+    <div><button class="print-button" type="button">打印 / PDF</button><button class="theme-toggle" type="button" aria-label="切换主题">◐</button></div>
+  </header>
+  <aside class="report-toc"><span>本页目录</span>{{TOC}}</aside>
+  <main class="report-shell">
+    <header class="report-hero">
+      <div class="report-meta"><span>{{CATEGORY}}</span><time>{{DATE}}</time><b>{{STATUS}}</b></div>
+      <h1>{{TITLE}}</h1>
+      <p>{{SUBTITLE}}</p>
+      <div class="hero-line"></div>
+    </header>
+    <article class="report-content">{{CONTENT}}</article>
+    <footer class="report-end"><span>END OF REPORT</span><a href="../index.html">返回全部报告</a></footer>
+  </main>
+  <button class="back-top" type="button" aria-label="返回顶部">↑</button>
+  <script src="../assets/app.js"></script>
+</body>
+</html>
