@@ -39,12 +39,15 @@ SSH 加密隧道安全地带回你的电脑。
 ```bash
 git clone https://github.com/JunhaoWu7/HTML-Skill.git
 cd HTML-Skill
-mkdir -p ~/.codex/skills
-ln -s "$PWD/serve-web-over-ssh" ~/.codex/skills/serve-web-over-ssh
-ln -s "$PWD/generate-html-report" ~/.codex/skills/generate-html-report
+./install.sh
 ```
 
-如果目标位置已经存在，先检查它是不是旧版本或正确的符号链接，不要直接覆盖。更新仓库：
+只执行 `git clone` 不会让 Codex 自动发现 Skill。`install.sh` 会把仓库中的
+`generate-html-report` 和 `serve-web-over-ssh` 安全注册到
+`${CODEX_HOME:-$HOME/.codex}/skills`；重复运行不会重复安装。安装后新开一个 Codex 会话即可使用。
+
+如果目标位置已有普通文件、目录或指向别处的符号链接，安装器会保留它并停止，不会覆盖。
+更新仓库后不需要重装，符号链接会自动使用新版内容：
 
 ```bash
 cd HTML-Skill
@@ -58,7 +61,8 @@ git pull --ff-only
 - `tmux`
 - `ss`（通常由 `iproute2` 提供，用于验证服务没有监听公网）
 
-Skill 不会自行安装系统软件或修改防火墙。
+仓库已经包含 HTML 模板、构建脚本和预览管理脚本，不需要额外下载这些内容。安装器会检查
+系统依赖并提示缺少项，但不会自行安装系统软件、修改防火墙或公开端口。
 
 ## 二、让 Agent 自动生成 HTML 汇报
 
