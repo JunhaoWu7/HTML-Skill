@@ -27,6 +27,12 @@ CODEX_HOME="${codex_home}" "${repo_root}/install.sh" >/dev/null
 assert_skill_link "${codex_home}" generate-html-report
 assert_skill_link "${codex_home}" serve-web-over-ssh
 
+if missing_home_output="$(env -u CODEX_HOME -u HOME "${repo_root}/install.sh" 2>&1)"; then
+  printf 'Expected installation to fail when CODEX_HOME and HOME are unavailable.\n' >&2
+  exit 1
+fi
+[[ "${missing_home_output}" == *'Set CODEX_HOME'* ]]
+
 first_target="$(readlink -- "${codex_home}/skills/generate-html-report")"
 CODEX_HOME="${codex_home}" "${repo_root}/install.sh" >/dev/null
 [[ "$(readlink -- "${codex_home}/skills/generate-html-report")" == "${first_target}" ]]

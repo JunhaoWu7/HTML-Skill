@@ -3,7 +3,14 @@
 set -euo pipefail
 
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-codex_home="${CODEX_HOME:-${HOME}/.codex}"
+if [[ -n "${CODEX_HOME:-}" ]]; then
+  codex_home="${CODEX_HOME}"
+elif [[ -n "${HOME:-}" ]]; then
+  codex_home="${HOME}/.codex"
+else
+  printf 'ERROR: HOME is unavailable. Set CODEX_HOME to the Codex data directory and retry.\n' >&2
+  exit 1
+fi
 skills_dir="${codex_home}/skills"
 skill_names=(
   generate-html-report
