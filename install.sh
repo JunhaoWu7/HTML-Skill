@@ -3,13 +3,13 @@
 set -euo pipefail
 
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
-install_mode="${1:-all}"
+install_mode="${1:-codex}"
 
 usage() {
   printf 'Usage: %s [all|codex|claude]\n' "${0##*/}"
-  printf '  all     Register every Skill for Codex and Claude Code (default).\n'
-  printf '  codex   Register every Skill only for Codex.\n'
+  printf '  codex   Register every Skill only for Codex (default).\n'
   printf '  claude  Register every Skill only for Claude Code.\n'
+  printf '  all     Register every Skill for Codex and Claude Code.\n'
 }
 
 case "${install_mode}" in

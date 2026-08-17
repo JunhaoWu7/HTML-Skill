@@ -36,12 +36,21 @@ for skill_name in "${skill_names[@]}"; do
 done
 
 first_target="$(readlink -- "${codex_home}/skills/generate-html-report")"
-CODEX_HOME="${codex_home}" CLAUDE_CONFIG_DIR="${claude_home}" "${repo_root}/install.sh" >/dev/null
+CODEX_HOME="${codex_home}" CLAUDE_CONFIG_DIR="${claude_home}" "${repo_root}/install.sh" all >/dev/null
 [[ "$(readlink -- "${codex_home}/skills/generate-html-report")" == "${first_target}" ]]
 for skill_name in "${skill_names[@]}"; do
   assert_skill_link "${codex_home}" "${skill_name}"
   assert_skill_link "${claude_home}" "${skill_name}"
 done
+
+default_codex_home="${test_root}/default-codex"
+default_claude_home="${test_root}/default-claude"
+CODEX_HOME="${default_codex_home}" CLAUDE_CONFIG_DIR="${default_claude_home}" \
+  "${repo_root}/install.sh" >/dev/null
+for skill_name in "${skill_names[@]}"; do
+  assert_skill_link "${default_codex_home}" "${skill_name}"
+done
+[[ ! -e "${default_claude_home}" ]]
 
 codex_only_home="${test_root}/codex-only"
 unused_claude_home="${test_root}/unused-claude"
@@ -101,7 +110,8 @@ fi
 [[ "$(readlink -- "${link_conflict_home}/skills/generate-html-report")" == "${test_root}/different-skill" ]]
 [[ ! -e "${link_conflict_home}/skills/serve-web-over-ssh" ]]
 
-"${repo_root}/install.sh" --help >/dev/null
+help_output="$("${repo_root}/install.sh" --help)"
+[[ "${help_output}" == *'Codex (default)'* ]]
 if "${repo_root}/install.sh" unknown-platform >/dev/null 2>&1; then
   printf 'Expected installation to reject an unknown platform.\n' >&2
   exit 1

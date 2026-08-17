@@ -4,7 +4,7 @@
 
 - `skills/<name>/`: first-party Skills maintained in this repository.
 - `external/<project>/`: pinned Git submodules that retain upstream authorship and history and serve as referenced source material.
-- `install.sh`: discovers first-party adapters under `skills/` and registers them for Codex, Claude Code, or both.
+- `install.sh`: discovers first-party adapters under `skills/`; no argument installs Codex by default, while explicit modes support Claude Code or both.
 - `scripts/validate-skills.py`: validates names, frontmatter, folder matching, and duplicate names.
 - `tests/`: repository-level installer and integration tests.
 

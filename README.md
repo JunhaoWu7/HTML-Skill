@@ -1,6 +1,6 @@
 # Personal Research Skills
 
-一套面向长期科研和工作的个人 Skill 仓库，同时支持 **Claude Code** 与 **Codex**。仓库当前仍使用 `HTML-Skill` 名称，后续可以直接在 GitHub 改名；安装器不依赖仓库目录名。
+一套面向长期科研和工作的个人 Skill 仓库，默认安装到 **Codex**，同时支持 **Claude Code**。仓库当前仍使用 `HTML-Skill` 名称，后续可以直接在 GitHub 改名；安装器不依赖仓库目录名。
 
 ## Skill 目录
 
@@ -52,12 +52,13 @@ cd HTML-Skill
 
 普通 `git clone` 也可以；首次运行 `install.sh` 时会自动初始化声明过的 Git 子模块。
 
-默认同时注册给 Claude Code 和 Codex，也可以只装一边：
+无参数运行时默认只注册给 Codex。需要 Claude Code 或两边同时使用时，显式选择对应模式：
 
 ```bash
-./install.sh all       # 默认：两边都安装
-./install.sh codex     # 仅 Codex
+./install.sh           # 默认：仅 Codex
+./install.sh codex     # 明确指定仅 Codex
 ./install.sh claude    # 仅 Claude Code
+./install.sh all       # Codex + Claude Code
 ```
 
 默认安装位置：
@@ -74,10 +75,10 @@ cd HTML-Skill
 ```bash
 git pull --ff-only
 git submodule update --init --recursive
-./install.sh all
+./install.sh           # 默认更新或安装 Codex
 ```
 
-已有 Skill 只需 `git pull`；增加了新 Skill、调整目录或首次安装到另一种 Agent 时，再运行 `install.sh`。
+已有 Skill 只需 `git pull`；增加了新 Skill、调整目录或首次安装到另一种 Agent 时，再运行对应模式，例如 `./install.sh claude` 或 `./install.sh all`。
 
 ## 依赖
 

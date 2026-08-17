@@ -1,7 +1,7 @@
 .PHONY: install test
 
 install:
-	./install.sh all
+	./install.sh
 
 test:
 	python3 scripts/validate-skills.py
