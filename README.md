@@ -8,7 +8,7 @@
 |---|---|---|
 | `generate-html-report` | 本仓库 | 把文字、Markdown、CSV、截图、进展和反馈整理成响应式 HTML 汇报，并构建和测试结果。 |
 | `serve-web-over-ssh` | 本仓库 | 在远程 Linux 上持久运行静态页面或 Web UI，通过 SSH 转发安全访问，不公开端口。 |
-| `scientific-figure-making` | 本仓库适配层 + [figures4papers](https://github.com/ChenLiu-1996/figures4papers) | 自动准备项目绘图环境，并用 Matplotlib 制作论文级柱状图、趋势图、热力图、多面板图和矢量输出。 |
+| `scientific-figure-making` | 经授权集成自 [figures4papers](https://github.com/ChenLiu-1996/figures4papers) | 自动准备项目绘图环境，并用 Matplotlib 制作论文级柱状图、趋势图、热力图、多面板图和矢量输出。 |
 
 HTML 汇报链路可以独立使用，也可以与其他科研 Skill 组合：
 
@@ -26,11 +26,8 @@ HTML 汇报链路可以独立使用，也可以与其他科研 Skill 组合：
 .
 ├── skills/                         # 自己维护的第一方 Skill
 │   ├── generate-html-report/
-│   ├── scientific-figure-making/   # 依赖管理和执行工作流适配层
+│   ├── scientific-figure-making/   # 本地集成的方法、规范和依赖工作流
 │   └── serve-web-over-ssh/
-├── external/                       # 固定版本的第三方 Git 子模块
-│   └── figures4papers/
-│       └── scientific-figure-making/
 ├── scripts/validate-skills.py      # 全仓库 Skill 校验
 ├── tests/test-install.sh           # 双平台安装与冲突保护测试
 ├── install.sh                      # 自动发现并注册全部 Skill
@@ -38,19 +35,17 @@ HTML 汇报链路可以独立使用，也可以与其他科研 Skill 组合：
 └── AGENTS.md -> CLAUDE.md          # Claude Code / Codex 共用约定
 ```
 
-新增第一方 Skill 时，只需放到 `skills/<skill-name>/` 并再次运行安装器，不需要手工修改 Skill 列表。第三方子模块作为参考材料，不直接注册为第二个同名 Skill。
+新增 Skill 时，只需放到 `skills/<skill-name>/` 并再次运行安装器，不需要手工修改 Skill 列表。
 
 ## 安装
 
-推荐连同第三方 Skill 一起克隆：
+克隆并安装：
 
 ```bash
-git clone --recurse-submodules https://github.com/JunhaoWu7/HTML-Skill.git
+git clone https://github.com/JunhaoWu7/HTML-Skill.git
 cd HTML-Skill
 ./install.sh
 ```
-
-普通 `git clone` 也可以；首次运行 `install.sh` 时会自动初始化声明过的 Git 子模块。
 
 无参数运行时默认只注册给 Codex。需要 Claude Code 或两边同时使用时，显式选择对应模式：
 
@@ -74,7 +69,6 @@ cd HTML-Skill
 
 ```bash
 git pull --ff-only
-git submodule update --init --recursive
 ./install.sh           # 默认更新或安装 Codex
 ```
 
@@ -85,7 +79,6 @@ git submodule update --init --recursive
 安装器只检查和提示依赖，不会安装系统软件、修改防火墙或公开端口。
 
 - 所有 Skill：Bash、Python 3
-- 初始化第三方 Skill：Git 和网络访问
 - 科研绘图：Skill 会按需在目标项目环境中安装 `matplotlib`、`numpy`，并且只在脚本需要时增加 `scipy`、`seaborn`、`python-dateutil` 或 `pandas`
 - SSH 安全预览：`tmux`、`ss`（通常来自 `iproute2`）
 
@@ -101,7 +94,7 @@ Python 包会安装在实际研究项目已有的环境或项目本地 `.venv` �
 参考 figures4papers 的风格重做这张消融实验图，但不要改变数据含义。
 ```
 
-`scientific-figure-making` 是本仓库维护的执行适配层，负责项目环境、按需安装、输出验证和可复现性；视觉规范和真实案例来自固定版本的 `figures4papers` 子模块。上游当前未提供明确的 `LICENSE` 文件，因此本仓库不复制或改写其 Skill 内容；更新上游版本时应先审查差异，再提交新的子模块指针。
+`scientific-figure-making` 的方法规范经作者许可，从 `figures4papers` 的提交 `6790a93` 集成并保留来源说明；本仓库另外加入项目环境、按需安装、输出验证和可复现性规则。没有复制上游的 `figure_*` 案例脚本、图片或生成结果，因此安装时也不会额外下载案例库。在线案例链接只在 Agent 确实需要参考时使用。
 
 ## 使用 HTML 汇报 Skill
 

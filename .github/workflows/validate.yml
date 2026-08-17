@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
       - name: Validate shell syntax
         run: bash -n install.sh tests/test-install.sh skills/generate-html-report/scripts/init-report-center skills/generate-html-report/scripts/test-init skills/serve-web-over-ssh/scripts/web-session
       - name: Run repository tests

@@ -24,18 +24,6 @@ case "${install_mode}" in
     ;;
 esac
 
-if [[ -f "${repo_root}/.gitmodules" && ! -f "${repo_root}/external/figures4papers/scientific-figure-making/SKILL.md" ]]; then
-  if ! command -v git >/dev/null 2>&1; then
-    printf 'ERROR: git is required to initialize the external Skill submodules.\n' >&2
-    exit 1
-  fi
-  printf 'Initializing external Skill submodules...\n'
-  if ! git -C "${repo_root}" submodule update --init --recursive --depth 1; then
-    printf 'ERROR: failed to initialize external Skill submodules. Check network access and retry.\n' >&2
-    exit 1
-  fi
-fi
-
 missing_commands=()
 for command_name in bash python3 tmux ss; do
   if ! command -v "${command_name}" >/dev/null 2>&1; then
@@ -125,12 +113,12 @@ for platform_index in "${!platform_names[@]}"; do
     source_path="${skill_sources[${skill_index}]}"
     target_path="${skills_dir}/${skill_name}"
     legacy_path="${repo_root}/${skill_name}"
-    upstream_figure_path="${repo_root}/external/figures4papers/scientific-figure-making"
+    legacy_upstream_path="${repo_root}/external/figures4papers/scientific-figure-making"
 
     if [[ -L "${target_path}" ]]; then
       current_link="$(readlink -- "${target_path}")"
       if [[ "${target_path}" -ef "${source_path}" || "${current_link}" == "${legacy_path}" || \
-        ("${skill_name}" == "scientific-figure-making" && "${current_link}" == "${upstream_figure_path}") ]]; then
+        ("${skill_name}" == "scientific-figure-making" && "${current_link}" == "${legacy_upstream_path}") ]]; then
         continue
       fi
       printf 'ERROR: preserving existing symlink with a different target: %s -> %s\n' \
@@ -158,7 +146,7 @@ for platform_index in "${!platform_names[@]}"; do
     source_path="${skill_sources[${skill_index}]}"
     target_path="${skills_dir}/${skill_name}"
     legacy_path="${repo_root}/${skill_name}"
-    upstream_figure_path="${repo_root}/external/figures4papers/scientific-figure-making"
+    legacy_upstream_path="${repo_root}/external/figures4papers/scientific-figure-making"
 
     if [[ -L "${target_path}" && "${target_path}" -ef "${source_path}" ]]; then
       printf 'Already installed: %s\n' "${skill_name}"
@@ -171,7 +159,7 @@ for platform_index in "${!platform_names[@]}"; do
     fi
 
     if [[ -L "${target_path}" && ("${current_link}" == "${legacy_path}" || \
-      ("${skill_name}" == "scientific-figure-making" && "${current_link}" == "${upstream_figure_path}")) ]]; then
+      ("${skill_name}" == "scientific-figure-making" && "${current_link}" == "${legacy_upstream_path}")) ]]; then
       rm -- "${target_path}"
       ln -s -- "${source_path}" "${target_path}"
       printf 'Migrated: %s -> %s\n' "${skill_name}" "${source_path}"

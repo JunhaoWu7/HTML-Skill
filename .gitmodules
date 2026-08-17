@@ -1,4 +1,0 @@
-[submodule "external/figures4papers"]
-	path = external/figures4papers
-	url = https://github.com/ChenLiu-1996/figures4papers.git
-	shallow = true
