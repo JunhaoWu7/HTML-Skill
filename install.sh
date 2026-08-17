@@ -49,14 +49,9 @@ if ((${#missing_commands[@]} > 0)); then
   printf 'Install system dependencies yourself; this installer will not modify the OS or firewall.\n' >&2
 fi
 
-if command -v python3 >/dev/null 2>&1 && ! python3 -c 'import matplotlib, numpy' >/dev/null 2>&1; then
-  printf 'WARNING: scientific figures require the Python packages matplotlib and numpy.\n' >&2
-  printf 'Install them in the target project environment when the figure Skill is used.\n' >&2
-fi
-
 shopt -s nullglob
 skill_sources=()
-for candidate in "${repo_root}"/skills/* "${repo_root}"/external/*/*; do
+for candidate in "${repo_root}"/skills/*; do
   if [[ -f "${candidate}/SKILL.md" ]]; then
     skill_sources+=("${candidate}")
   fi
@@ -130,10 +125,12 @@ for platform_index in "${!platform_names[@]}"; do
     source_path="${skill_sources[${skill_index}]}"
     target_path="${skills_dir}/${skill_name}"
     legacy_path="${repo_root}/${skill_name}"
+    upstream_figure_path="${repo_root}/external/figures4papers/scientific-figure-making"
 
     if [[ -L "${target_path}" ]]; then
       current_link="$(readlink -- "${target_path}")"
-      if [[ "${target_path}" -ef "${source_path}" || "${current_link}" == "${legacy_path}" ]]; then
+      if [[ "${target_path}" -ef "${source_path}" || "${current_link}" == "${legacy_path}" || \
+        ("${skill_name}" == "scientific-figure-making" && "${current_link}" == "${upstream_figure_path}") ]]; then
         continue
       fi
       printf 'ERROR: preserving existing symlink with a different target: %s -> %s\n' \
@@ -161,13 +158,20 @@ for platform_index in "${!platform_names[@]}"; do
     source_path="${skill_sources[${skill_index}]}"
     target_path="${skills_dir}/${skill_name}"
     legacy_path="${repo_root}/${skill_name}"
+    upstream_figure_path="${repo_root}/external/figures4papers/scientific-figure-making"
 
     if [[ -L "${target_path}" && "${target_path}" -ef "${source_path}" ]]; then
       printf 'Already installed: %s\n' "${skill_name}"
       continue
     fi
 
-    if [[ -L "${target_path}" && "$(readlink -- "${target_path}")" == "${legacy_path}" ]]; then
+    current_link=""
+    if [[ -L "${target_path}" ]]; then
+      current_link="$(readlink -- "${target_path}")"
+    fi
+
+    if [[ -L "${target_path}" && ("${current_link}" == "${legacy_path}" || \
+      ("${skill_name}" == "scientific-figure-making" && "${current_link}" == "${upstream_figure_path}")) ]]; then
       rm -- "${target_path}"
       ln -s -- "${source_path}" "${target_path}"
       printf 'Migrated: %s -> %s\n' "${skill_name}" "${source_path}"

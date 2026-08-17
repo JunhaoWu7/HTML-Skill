@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scientific Figure Making"
+  short_description: "Create publication-ready Matplotlib figures"
+  default_prompt: "Use $scientific-figure-making to turn my results into a publication-ready figure."

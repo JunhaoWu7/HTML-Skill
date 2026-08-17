@@ -3,8 +3,8 @@
 ## Architecture
 
 - `skills/<name>/`: first-party Skills maintained in this repository.
-- `external/<project>/`: pinned Git submodules that retain upstream authorship and history.
-- `install.sh`: discovers all first-party and external Skills and registers them for Codex, Claude Code, or both.
+- `external/<project>/`: pinned Git submodules that retain upstream authorship and history and serve as referenced source material.
+- `install.sh`: discovers first-party adapters under `skills/` and registers them for Codex, Claude Code, or both.
 - `scripts/validate-skills.py`: validates names, frontmatter, folder matching, and duplicate names.
 - `tests/`: repository-level installer and integration tests.
 
@@ -16,7 +16,7 @@
 4. Add `agents/openai.yaml` when Codex UI metadata is useful; the core Skill must still work without it in Claude Code.
 5. Run `make test` and the official Skill validator before committing.
 
-Do not copy third-party Skill contents into `skills/` unless the license permits redistribution. Prefer a pinned submodule and document its source in `README.md`.
+Do not copy third-party Skill contents into `skills/` unless the license permits redistribution. Prefer a pinned submodule plus a concise first-party adapter that controls dependencies, attribution, and triggering. Do not register both the adapter and an overlapping upstream Skill.
 
 ## Compatibility and Safety
 

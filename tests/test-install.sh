@@ -15,11 +15,7 @@ cleanup() {
 trap cleanup EXIT
 
 skill_source() {
-  case "$1" in
-    generate-html-report|serve-web-over-ssh) printf '%s/skills/%s\n' "${repo_root}" "$1" ;;
-    scientific-figure-making) printf '%s/external/figures4papers/scientific-figure-making\n' "${repo_root}" ;;
-    *) return 1 ;;
-  esac
+  printf '%s/skills/%s\n' "${repo_root}" "$1"
 }
 
 assert_skill_link() {
@@ -70,6 +66,13 @@ mkdir -p -- "${legacy_home}/skills"
 ln -s -- "${repo_root}/generate-html-report" "${legacy_home}/skills/generate-html-report"
 CODEX_HOME="${legacy_home}" "${repo_root}/install.sh" codex >/dev/null
 assert_skill_link "${legacy_home}" generate-html-report
+
+upstream_migration_home="${test_root}/upstream-migration"
+mkdir -p -- "${upstream_migration_home}/skills"
+ln -s -- "${repo_root}/external/figures4papers/scientific-figure-making" \
+  "${upstream_migration_home}/skills/scientific-figure-making"
+CODEX_HOME="${upstream_migration_home}" "${repo_root}/install.sh" codex >/dev/null
+assert_skill_link "${upstream_migration_home}" scientific-figure-making
 
 if missing_home_output="$(env -u CODEX_HOME -u CLAUDE_CONFIG_DIR -u HOME "${repo_root}/install.sh" all 2>&1)"; then
   printf 'Expected installation to fail when Agent homes are unavailable.\n' >&2

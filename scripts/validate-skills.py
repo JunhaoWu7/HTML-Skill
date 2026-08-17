@@ -12,9 +12,7 @@ NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 
 def discover_skills() -> list[Path]:
-    paths = list((REPO_ROOT / "skills").glob("*/SKILL.md"))
-    paths.extend((REPO_ROOT / "external").glob("*/*/SKILL.md"))
-    return sorted(paths)
+    return sorted((REPO_ROOT / "skills").glob("*/SKILL.md"))
 
 
 def parse_frontmatter(path: Path) -> tuple[str, str]:
@@ -69,6 +67,8 @@ def main() -> int:
             )
         if not description:
             errors.append(f"{skill_file}: description is empty")
+        if "TODO" in skill_file.read_text(encoding="utf-8"):
+            errors.append(f"{skill_file}: unresolved TODO placeholder")
         if name in seen_names:
             errors.append(f"{skill_file}: duplicate Skill name also used by {seen_names[name]}")
         else:
