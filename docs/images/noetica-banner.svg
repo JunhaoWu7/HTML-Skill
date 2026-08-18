@@ -28,7 +28,7 @@
   <circle cx="1170" cy="330" r="420" fill="url(#halo)"/>
   <circle cx="1450" cy="80" r="220" fill="#d5ad66" opacity=".04"/>
 
-  <g transform="translate(116 108)">
+  <g transform="translate(116 70)">
     <circle cx="92" cy="92" r="82" fill="none" stroke="#76cfc1" stroke-opacity=".36" stroke-width="2"/>
     <circle cx="92" cy="92" r="63" fill="#0c2635" stroke="url(#gold)" stroke-width="3"/>
     <path d="M55 126V58l74 68V58" fill="none" stroke="#f6efd9" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
