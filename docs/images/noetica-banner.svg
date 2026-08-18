@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="640" viewBox="0 0 1600 640" role="img" aria-labelledby="title desc">
+  <title id="title">Noetica agent skills</title>
+  <desc id="desc">A dark academic banner showing a connected research workflow of papers, charts, code, and reports.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071826"/>
+      <stop offset="0.58" stop-color="#0d2b3a"/>
+      <stop offset="1" stop-color="#123b43"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#6fd3c2" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#6fd3c2" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f5d99b"/>
+      <stop offset="1" stop-color="#c99b4f"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#bce8e0" stroke-opacity=".055"/>
+    </pattern>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#02090f" flood-opacity=".45"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="640" rx="38" fill="url(#bg)"/>
+  <rect width="1600" height="640" rx="38" fill="url(#grid)"/>
+  <circle cx="1170" cy="330" r="420" fill="url(#halo)"/>
+  <circle cx="1450" cy="80" r="220" fill="#d5ad66" opacity=".04"/>
+
+  <g transform="translate(116 108)">
+    <circle cx="92" cy="92" r="82" fill="none" stroke="#76cfc1" stroke-opacity=".36" stroke-width="2"/>
+    <circle cx="92" cy="92" r="63" fill="#0c2635" stroke="url(#gold)" stroke-width="3"/>
+    <path d="M55 126V58l74 68V58" fill="none" stroke="#f6efd9" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="55" cy="58" r="7" fill="#74d1c2"/>
+    <circle cx="129" cy="58" r="7" fill="#d8ad62"/>
+    <circle cx="55" cy="126" r="7" fill="#d8ad62"/>
+    <circle cx="129" cy="126" r="7" fill="#74d1c2"/>
+  </g>
+
+  <g transform="translate(116 340)" fill="#f7f1df">
+    <text x="0" y="0" font-family="Georgia, 'Times New Roman', serif" font-size="108" letter-spacing="2">Noetica</text>
+    <text x="5" y="67" fill="#aad7d0" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="26" letter-spacing="4">AGENT SKILLS FOR RESEARCH &amp; KNOWLEDGE WORK</text>
+    <path d="M5 104h490" stroke="url(#gold)" stroke-width="3"/>
+    <text x="5" y="153" fill="#d8e8e4" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="22">Reusable · Cross-agent · Research-minded</text>
+  </g>
+
+  <g transform="translate(824 112)" filter="url(#shadow)">
+    <path d="M142 104C252 18 328 74 395 142S550 244 650 172" fill="none" stroke="#7ed6c7" stroke-opacity=".56" stroke-width="3" stroke-dasharray="8 12"/>
+    <path d="M142 104C246 192 330 282 430 330S573 375 650 392" fill="none" stroke="#d9ad62" stroke-opacity=".58" stroke-width="3" stroke-dasharray="8 12"/>
+
+    <g transform="translate(0 42)">
+      <rect width="210" height="154" rx="18" fill="#f8f2df"/>
+      <rect x="28" y="25" width="92" height="10" rx="5" fill="#173847" opacity=".85"/>
+      <rect x="28" y="49" width="152" height="6" rx="3" fill="#59737c" opacity=".5"/>
+      <rect x="28" y="66" width="139" height="6" rx="3" fill="#59737c" opacity=".38"/>
+      <rect x="28" y="83" width="150" height="6" rx="3" fill="#59737c" opacity=".38"/>
+      <path d="M28 126l31-23 31 12 31-35 31 18 28-39" fill="none" stroke="#2d9385" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <g transform="translate(266 142)">
+      <rect width="220" height="170" rx="18" fill="#102c3c" stroke="#7bcfc1" stroke-opacity=".45"/>
+      <circle cx="25" cy="24" r="5" fill="#d8ad62"/>
+      <circle cx="43" cy="24" r="5" fill="#6dc9bb"/>
+      <path d="M28 64h58M28 88h118M28 112h90M28 136h136" stroke="#d4e9e4" stroke-opacity=".72" stroke-width="7" stroke-linecap="round"/>
+      <path d="M166 62l21 21-21 21" fill="none" stroke="#d7aa5e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <g transform="translate(540 208)">
+      <rect width="230" height="184" rx="18" fill="#f8f2df"/>
+      <rect width="230" height="34" rx="18" fill="#dbe8e3"/>
+      <circle cx="20" cy="17" r="4" fill="#d7aa5e"/>
+      <circle cx="34" cy="17" r="4" fill="#2e9386"/>
+      <rect x="25" y="58" width="78" height="9" rx="4.5" fill="#163847"/>
+      <rect x="25" y="84" width="52" height="66" rx="9" fill="#183d4b"/>
+      <rect x="88" y="108" width="52" height="42" rx="9" fill="#5bb4a6"/>
+      <rect x="151" y="76" width="52" height="74" rx="9" fill="#d3a65a"/>
+      <path d="M25 164h178" stroke="#789096" stroke-opacity=".4" stroke-width="3"/>
+    </g>
+
+    <g fill="#f2d08c">
+      <circle cx="142" cy="146" r="8"/>
+      <circle cx="376" cy="226" r="8"/>
+      <circle cx="650" cy="300" r="8"/>
+    </g>
+  </g>
+</svg>

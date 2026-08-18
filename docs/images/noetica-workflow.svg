@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="720" viewBox="0 0 1600 720" role="img" aria-labelledby="title desc">
+  <title id="title">How Noetica turns intent into research outputs</title>
+  <desc id="desc">A workflow from a plain-language request through specialized agent skills to figures, HTML reports, and private previews.</desc>
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffdf6"/>
+      <stop offset="1" stop-color="#f0eadb"/>
+    </linearGradient>
+    <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a2131"/>
+      <stop offset="1" stop-color="#153e48"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#263b43" flood-opacity=".14"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#a9854e"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="720" rx="36" fill="url(#paper)"/>
+  <circle cx="1470" cy="70" r="220" fill="#6dc6b8" opacity=".08"/>
+  <circle cx="110" cy="650" r="250" fill="#d6a85d" opacity=".07"/>
+
+  <text x="110" y="105" fill="#0a2636" font-family="Georgia, 'Times New Roman', serif" font-size="52">From intent to a finished research artifact</text>
+  <text x="112" y="150" fill="#587178" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="22">Tell the agent what you need. Noetica supplies the reusable method, guardrails, and handoff.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="110" y="240" width="310" height="250" rx="28" fill="#fffdf7" stroke="#d6cdb9"/>
+    <circle cx="170" cy="302" r="28" fill="#d5aa61"/>
+    <path d="M157 302h26M170 289v26" stroke="#fffdf7" stroke-width="5" stroke-linecap="round"/>
+    <text x="215" y="311" fill="#173747" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="27" font-weight="700">Your request</text>
+    <text x="150" y="374" fill="#587178" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="20">“Turn these results into a</text>
+    <text x="150" y="407" fill="#587178" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="20">paper figure and an HTML</text>
+    <text x="150" y="440" fill="#587178" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="20">update I can review.”</text>
+
+    <rect x="610" y="205" width="410" height="320" rx="32" fill="url(#navy)"/>
+    <circle cx="680" cy="276" r="34" fill="#123443" stroke="#6ecabc" stroke-width="3"/>
+    <path d="M663 294v-36l34 36v-36" fill="none" stroke="#f7efd9" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="735" y="286" fill="#f8f1de" font-family="Georgia, 'Times New Roman', serif" font-size="42">Noetica</text>
+    <rect x="660" y="338" width="310" height="48" rx="14" fill="#f7f0dc" fill-opacity=".1"/>
+    <circle cx="687" cy="362" r="7" fill="#68c7b8"/>
+    <text x="710" y="369" fill="#dbeae6" font-family="ui-monospace, SFMono-Regular, monospace" font-size="17">scientific-figure-making</text>
+    <rect x="660" y="401" width="310" height="48" rx="14" fill="#f7f0dc" fill-opacity=".1"/>
+    <circle cx="687" cy="425" r="7" fill="#d7aa5f"/>
+    <text x="710" y="432" fill="#dbeae6" font-family="ui-monospace, SFMono-Regular, monospace" font-size="17">generate-html-report</text>
+    <rect x="660" y="464" width="310" height="35" rx="12" fill="#f7f0dc" fill-opacity=".06"/>
+    <text x="684" y="488" fill="#a8d7cf" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15">select · execute · validate · hand off</text>
+
+    <rect x="1210" y="220" width="280" height="125" rx="24" fill="#fffdf7" stroke="#d6cdb9"/>
+    <path d="M1250 309v-47M1288 309v-74M1326 309v-31M1364 309v-60" stroke="#2d9285" stroke-width="16" stroke-linecap="round"/>
+    <text x="1400" y="273" fill="#173747" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="21" font-weight="700">Paper-ready</text>
+    <text x="1400" y="303" fill="#5d7378" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18">figures</text>
+
+    <rect x="1210" y="380" width="280" height="125" rx="24" fill="#fffdf7" stroke="#d6cdb9"/>
+    <rect x="1250" y="416" width="112" height="60" rx="9" fill="#173747"/>
+    <rect x="1263" y="428" width="43" height="9" rx="4" fill="#d5aa60"/>
+    <rect x="1263" y="447" width="76" height="6" rx="3" fill="#9fcfc7"/>
+    <rect x="1263" y="461" width="61" height="6" rx="3" fill="#9fcfc7" opacity=".7"/>
+    <text x="1400" y="433" fill="#173747" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="21" font-weight="700">HTML</text>
+    <text x="1400" y="463" fill="#5d7378" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18">reports</text>
+  </g>
+
+  <path d="M445 365h125" fill="none" stroke="#a9854e" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M1060 365h100" fill="none" stroke="#a9854e" stroke-width="4"/>
+  <path d="M1160 365v-82h20" fill="none" stroke="#a9854e" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M1160 365v78h20" fill="none" stroke="#a9854e" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <g transform="translate(110 600)">
+    <path d="M0 0h1380" stroke="#d8cfbd"/>
+    <text x="0" y="48" fill="#6a7d80" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18">CODEX BY DEFAULT</text>
+    <text x="220" y="48" fill="#6a7d80" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18">CLAUDE CODE SUPPORTED</text>
+    <text x="520" y="48" fill="#6a7d80" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18">PROJECT-LOCAL DEPENDENCIES</text>
+    <text x="850" y="48" fill="#6a7d80" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18">PRIVATE PREVIEW BY DEFAULT</text>
+  </g>
+</svg>

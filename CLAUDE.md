@@ -1,4 +1,4 @@
-# Personal Research Skills — Repository Guide
+# Noetica — Repository Guide
 
 ## Architecture
 
@@ -6,6 +6,7 @@
 - `install.sh`: discovers first-party adapters under `skills/`; no argument installs Codex by default, while explicit modes support Claude Code or both.
 - `scripts/validate-skills.py`: validates names, frontmatter, folder matching, and duplicate names.
 - `tests/`: repository-level installer and integration tests.
+- `docs/images/`: lightweight repository branding and workflow visuals used by the root README.
 
 ## Adding a Skill
 
